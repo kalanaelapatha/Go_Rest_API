@@ -39,6 +39,18 @@ func getBooks(w http.ResponseWriter, route *http.Request) {
 //Get Single Book by id
 func getBook(w http.ResponseWriter, route *http.Request) {
 
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(route) //get the params
+
+	//Loops through books and find with id
+
+	for _, item := range books {
+		if item.ID == params["id"] {
+			json.NewEncoder(w).Encode(item)
+			return
+		}
+	}
+	json.NewEncoder(w).Encode(&Books{})
 }
 
 // Create a book
@@ -68,7 +80,7 @@ func main() {
 	// Route Handlers / End Points
 
 	route.HandleFunc("/api/books", getBooks).Methods("GET")
-	route.HandleFunc("/api/book/{id}", getBook).Methods("GET")
+	route.HandleFunc("/api/books/{id}", getBook).Methods("GET")
 	route.HandleFunc("/api/books", createBook).Methods("POST")
 	route.HandleFunc("/api/book/{id}", updateBook).Methods("PUT")
 	route.HandleFunc("/api/books", deleteBook).Methods("DELETE")
