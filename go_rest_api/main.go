@@ -68,7 +68,31 @@ func createBook(w http.ResponseWriter, route *http.Request) {
 }
 
 //update a book
+
+//its the cobination of the delete and create function also
+//without change anythind jsu copy and past all of things under delete
+//then get part of thing from create method
+//after return it
 func updateBook(w http.ResponseWriter, route *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(route) //get all params
+
+	for index, item := range books {
+
+		if item.ID == params["id"] {
+			books = append(books[:index], books[index+1:]...)
+			// from create method
+			var book Books
+			_ = json.NewDecoder(route.Body).Decode(&book)
+			book.ID = strconv.Itoa(rand.Intn(10000000)) // Mock Id - Not safe
+			books = append(books, book)
+			//end from create method
+
+			return
+		}
+	}
+	json.NewEncoder(w).Encode(books)
 
 }
 
@@ -103,7 +127,7 @@ func main() {
 	route.HandleFunc("/api/books", getBooks).Methods("GET")
 	route.HandleFunc("/api/books/{id}", getBook).Methods("GET")
 	route.HandleFunc("/api/books", createBook).Methods("POST")
-	route.HandleFunc("/api/book/{id}", updateBook).Methods("PUT")
+	route.HandleFunc("/api/books/{id}", updateBook).Methods("PUT")
 	route.HandleFunc("/api/books/{id}", deleteBook).Methods("DELETE")
 
 	//setup the server
